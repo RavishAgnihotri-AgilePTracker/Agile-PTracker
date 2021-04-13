@@ -1,0 +1,8 @@
+.slds-item {
+    border: 1px solid #9aa9b3;
+    border-radius: 0.25rem;
+    background-clip: padding-box;
+    padding: 0.45rem;
+    margin: 0.25rem;
+    max-width: 12rem;
+}

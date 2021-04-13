@@ -1,0 +1,65 @@
+<template>
+    <div class="spinner">
+      <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+        </lightning-spinner>
+      </template>
+    </div>
+    
+        <lightning-record-view-form
+          record-id={recordId}
+          object-api-name="Sprint__c"
+        >
+          <div class="slds-box">
+            <lightning-output-field field-name="Name"> </lightning-output-field>
+            <!-- <lightning-output-field field-name="Project__c">
+            </lightning-output-field> -->
+            <lightning-output-field field-name="Stage__c">
+            </lightning-output-field>
+            <lightning-output-field field-name="Start_Date__c">
+            </lightning-output-field>
+            <lightning-output-field field-name="Target_Date__c">
+            </lightning-output-field>
+            <lightning-output-field field-name="Cumulative_Progress__c">
+            </lightning-output-field>
+            <lightning-output-field field-name="Sprint_Goal__c">
+            </lightning-output-field>
+          </div>
+        </lightning-record-view-form>
+  
+        <div class="gap" style="padding-top: 0.2cm"></div>
+        <lightning-card title="Backlogs" icon-name="action:share_poll">
+          <!-- ////////////////////////// Filter Status  ///////////////////////////////////////-->
+          <div class="slds-grid">
+            <div class="slds-col slds-size_3-of-12">
+                <lightning-combobox name="Backlog Type" label="Backlog Type" value={value}
+                    placeholder="Select Backlog Type" options={optionsIssueType}
+                    onchange={handleChangeIssueType}>
+                </lightning-combobox>
+            </div>
+            <div class="slds-col  slds-size_3-of-12 slds-p-left_medium">
+                <lightning-combobox name="Stage Type" label="Stage Type" value={value}
+                    placeholder="Select Stage" options={optionsStageType} onchange={handleChangeStage}>
+                </lightning-combobox>
+            </div>
+        </div>
+        <br>
+        <!-- ////////////////////////// Filter Status  Ends///////////////////////////////////////-->
+          <template if:true={hasBacklogs}>
+            <lightning-datatable
+              data={backlogList}
+              columns={columns}
+              key-field="Id"
+              sorted-by={sortBy}
+              sorted-direction={sortDirection}
+              onsort={handleSortdata}
+              hide-checkbox-column="true"
+            >
+            </lightning-datatable>
+            <div style="padding-top:0.2cm ;"></div>
+              <c-pagination records={totalBacklogList} onupdate={handleSprintPagination}>
+              </c-pagination>
+          </template>
+  </lightning-card>
+
+  </template>

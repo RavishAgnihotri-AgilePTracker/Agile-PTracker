@@ -1,0 +1,61 @@
+<template>
+
+  <div class="float-container">
+
+    <div class="float-child2">
+      <p>Epic section</p>
+    </div>
+
+    <div class="float-child1">
+      <table class="table-dragable slds-table slds-table_cell-buffer slds-table_bordered"
+        aria-describedby="Issue Details" style="table-layout:fixed; width: 30cm;">
+        <thead>
+          <tr>
+            <th scope="col" style="width:25rem;">Title</th>
+            <th scope="col">Backlog Type</th>
+            <th scope="col">Issue Type</th>
+            <th scope="col">Priority</th> 
+            <th scope="col">Estimated Hours</th>
+            <th scope="col">Assignee</th> 
+          </tr>
+        </thead>
+        <tbody>
+          <template if:true={issues}>
+            <template for:each={issues} for:item="issue" for:index="index">
+              <tr class="slds-hint-parent" key={issue.Id} id={issue.Id} draggable="true" data-drag-id={index}
+                ondragstart={onDragStart} ondragover={onDragOver} ondrop={onDrop}>
+                <td data-label="Title">
+                  <div class="slds-cell-wrap" title={issue.Title}>{issue.Title}</div>
+                </td>
+                <td data-label="backlogType">
+                  <div class="slds-truncate" title={issue.backlogType}>{issue.backlogType}</div>
+                </td>
+                <td data-label="issueType">
+                  
+                  <div class="slds-truncate" title={issue.issueType}>{issue.issueType}</div>
+                </td>
+                <td data-label="priority">
+                  <div class="slds-truncate" title={issue.priority}>{issue.priority}</div>
+                </td>
+                <td data-label="estimatedHours">
+                  <div class="slds-truncate" title={issue.estimatedHours}>{issue.estimatedHours}</div>
+                </td>
+                <td data-label="assignee">
+                  <div class="slds-truncate" title={issue.assignee}>{issue.assignee}</div>
+                </td>
+                
+              </tr>
+            </template>
+</template>
+<!-- <template if:true={issues.error}>No rows found.</template> -->
+</tbody>
+</table>
+ 
+    </div>
+
+  </div>
+
+
+
+
+</template>

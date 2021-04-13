@@ -1,0 +1,129 @@
+<template>
+  <div class="slds-page-header slds-page-header--object-home">
+    <lightning-layout>
+      <lightning-layout-item>
+        <lightning-icon icon-name="action:submit_for_approval" size="medium" alternative-text="Sprint">
+        </lightning-icon>
+      </lightning-layout-item>
+      <lightning-layout-item class="slds-m-left--small">
+        <p class="slds-text-title--caps slds-line-height--reset">Sprint</p>
+        <h1 class="slds-page-header__title slds-p-right--x-small">
+          Approval Sprints
+        </h1>
+      </lightning-layout-item>
+      <template if:true={hasData}>
+        <lightning-layout-item if:true={isProductOwner} style='padding-left: 50rem;' class="slds-float_right">
+          <lightning-button variant="brand-outline" label="Approve" onclick={onclickApprove}></lightning-button>
+        </lightning-layout-item>
+        <lightning-layout-item if:true={isProductOwner} style='padding-left: 1rem;' class="slds-float_right">
+          <lightning-button variant="destructive-text" label="Reject" onclick={onclickReject}>
+          </lightning-button>
+        </lightning-layout-item>
+      </template>
+
+    </lightning-layout>
+  </div>
+  <template if:true={hasData}>
+    <lightning-tabset>
+      <lightning-tab label="Details" value="1">
+        <lightning-record-view-form record-id={sprintId} object-api-name="Sprint__c">
+          <div class="slds-box">
+            <lightning-output-field field-name="Name"> </lightning-output-field>
+            <lightning-output-field field-name="Project__c">
+            </lightning-output-field>
+            <lightning-output-field field-name="Start_Date__c">
+            </lightning-output-field>
+            <lightning-output-field field-name="Target_Date__c">
+            </lightning-output-field>
+            <lightning-output-field field-name="Sprint_Goal__c">
+            </lightning-output-field>
+          </div>
+        </lightning-record-view-form>
+
+        <div class="gap" style="padding-top: 0.2cm"></div>
+        <lightning-card title="Backlogs" icon-name="action:share_poll">
+           <!-- ////////////////////////// Filter Status  ///////////////////////////////////////-->
+           <div class="slds-grid">
+            <div class="slds-col slds-size_3-of-12">
+                <lightning-combobox name="Backlog Type" label="Backlog Type" value={value}
+                    placeholder="Select Backlog Type" options={optionsIssueType}
+                    onchange={handleChangeIssueType}>
+                </lightning-combobox>
+            </div>
+            <div class="slds-col  slds-size_3-of-12 slds-p-left_medium">
+                <lightning-combobox name="Stage Type" label="Stage Type" value={value}
+                    placeholder="Select Stage" options={optionsStageType} onchange={handleChangeStage}>
+                </lightning-combobox>
+            </div>
+        </div>
+        <br>
+        <!-- ////////////////////////// Filter Status  Ends///////////////////////////////////////-->
+          <template if:true={hasBacklogs}>
+            <lightning-datatable data={pendingApprovalBacklogList} columns={columns} key-field="Id" sorted-by={sortBy}
+              sorted-direction={sortDirection} onsort={handleSortdata} hide-checkbox-column="true">
+            </lightning-datatable>
+            <div style="padding-top:0.2cm ;"></div>
+            <c-pagination records={totalPendingApprovalBacklogList} onupdate={handleSprintPagination}>
+            </c-pagination>
+          </template>
+        </lightning-card>
+      </lightning-tab>
+      <lightning-tab label="Files" value="2">
+        <lightning-card>
+          <c-custom-file-uploader record-id={recordId}> </c-custom-file-uploader>
+        </lightning-card>
+      </lightning-tab>
+    </lightning-tabset>
+  </template>
+  <template if:false={hasData}>
+    <div class="slds-illustration slds-illustration_small" aria-hidden="true">
+      <img src="/img/chatter/Desert.svg" class="slds-illustration__svg" alt="No Backlogs Yet" />
+      <div class="slds-text-color_weak">
+        <h3 class="slds-text-heading_medium">No Sprints Yet</h3>
+      </div>
+    </div>
+  </template>
+  <template if:true={askReason}>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+      aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+        <header class="slds-modal__header">
+          <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+            onclick={closeReasonModal}>
+            <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small">
+            </lightning-icon>
+            <span class="slds-assistive-text">Close</span>
+          </button>
+          <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+            Reason for Rejection
+          </h2>
+        </header>
+        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+          <lightning-record-edit-form object-api-name="Sprint__c" record-id={sprintId} onsubmit={handleSubmit}
+            onsuccess={handleSuccess}>
+            <lightning-messages></lightning-messages>
+            <div class="slds-grid slds-wrap">
+              <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                <lightning-input-field field-name="Name" disabled>
+                </lightning-input-field>
+              </span>
+              <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                <lightning-input-field field-name="Rejection_Reason__c" value="">
+                </lightning-input-field>
+              </span>
+            </div>
+
+            <footer class="slds-modal__footer">
+              <lightning-button class="slds-button slds-button_left" label="Reject" type="submit"
+                variant="brand-outline"></lightning-button>
+              <lightning-button class="slds-button slds-button_right" label="Cancel" variant="destructive-text"
+                onclick={closeReasonModal}>
+              </lightning-button>
+            </footer>
+          </lightning-record-edit-form>
+        </div>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </template>
+</template>

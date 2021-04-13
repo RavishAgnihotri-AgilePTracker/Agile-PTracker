@@ -1,0 +1,72 @@
+.text {
+    color: #A5ADBA;
+}
+
+.backlog-tile {
+    border: 1px solid #a1a09f;
+    border-radius: .25rem;
+    display: block;
+    padding-left: 0.2cm;
+    padding-right: 0.2cm;
+    padding-top: 0.1cm;
+    padding-bottom: 0.1cm;
+}
+
+h1 {
+    color: #0052CC;
+    font-size: x-large;
+}
+
+:host {
+    --sds-c-button-brand-color-background: #0052CC;
+    --sds-c-button-brand-color-border: #0052CC;
+    /* Other CSS custom properties here */
+}
+
+.slds-modal__header {
+    background-color: #367be4;
+    color: white;
+}
+
+/* .box {
+    width: 100%;
+    display: table;
+}
+
+.box .box-row {
+    display: table-row;
+}
+
+.box .box-cell.box1 {
+    display: table-cell;
+    width: 60%;
+    background: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+    text-align: justify;
+}
+
+.box .box-cell.box2 {
+    display: table-cell;
+    width: 40%;
+    background: rgb(255, 255, 255);
+    text-align: justify;
+    border: 1px solid rgb(150, 147, 147);
+} */
+
+
+
+.float-container {
+    border: 3px solid #fff;
+}
+
+.float-child1 {
+    width: 60%;
+    float: left;
+} 
+
+.float-child2 {
+    width: 40%;
+    float: left;
+    padding: 8px;
+    border: 1px solid rgb(150, 147, 147);
+}

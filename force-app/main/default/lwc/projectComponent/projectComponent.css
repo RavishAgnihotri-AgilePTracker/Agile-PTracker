@@ -1,0 +1,18 @@
+h1 {
+    color: #0052CC;
+    font-size: x-large;
+}
+
+
+
+:host {
+    --sds-c-button-brand-color-background: #0052CC;
+    --sds-c-button-brand-color-border: #0052CC;
+    /* Other CSS custom properties here */
+  
+}
+
+.slds-modal__header{
+    background-color: #367be4;
+    color: white;
+}

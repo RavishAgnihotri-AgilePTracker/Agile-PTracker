@@ -1,0 +1,27 @@
+<template>
+    <template if:true={isSameStage}>
+   <li class="slds-item slds-var-m-around_small" draggable="true" ondragstart={itemDragStart}>
+       <article class="slds-tile slds-tile_board">
+            <div class="slds-float_right">
+                <lightning-button-icon if:false={isBugType} onclick={handleCreateBug} icon-name="action:bug" alternative-text="Create Bug" class="slds-m-right_xx-small" title="CreateBug"></lightning-button-icon>
+            </div>
+           <h3 class="slds-truncate" title={record.Title__c}>
+               <a href="#" data-id={record.Id} onclick={navigateBacklogHandler}>
+                   <span class="slds-truncate" data-id={record.Id}>
+                    {record.Title__c}
+                   </span>
+               </a>
+               <p class="slds-truncate" title={record.Priority__c}><b>Priority:</b> {record.Priority__c}</p>
+               <p class="slds-truncate" title={record.Issue_Type__c}><b>Type:</b> {record.Issue_Type__c}</p> 
+                <p title={record.Progress__c}><b>Progress:</b> {record.Progress__c}</p>
+                <input type="range" class="slds-slider__range" value={record.Progress__c}
+                onchange={progressOnChange} disabled={disableProgressBar} />
+                <p if:true={record.Assigned_Employee__c} class="slds-truncate" title={record.Assigned_Employee__r.Name}><b>Assignee:</b> {record.Assigned_Employee__r.Name}</p>
+                <p class="slds-truncate"  if:true={record.Comment__c} title={record.Comment__c}><b>Comment:</b> {record.Comment__c}</p>    
+                    
+           </h3>
+       </article>
+   </li>
+</template>
+ 
+</template>

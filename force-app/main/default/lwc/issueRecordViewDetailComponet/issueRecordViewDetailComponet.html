@@ -1,0 +1,288 @@
+<template>
+    <div class="spinner">
+        <template if:true={isLoading}>
+          <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+          </lightning-spinner>
+        </template>
+    </div>
+      
+    <template if:false={isBusinessBacklog}>
+        
+                <lightning-record-view-form record-id={recordId} object-api-name="Issue__c">
+                    <div class="slds-box">
+                        <lightning-output-field field-name="Name">
+                        </lightning-output-field>
+                        <lightning-output-field field-name="Title__c">
+                        </lightning-output-field>
+                        <lightning-output-field field-name="Assignee__c">
+                        </lightning-output-field>
+                         <lightning-output-field field-name="Assigned_Employee__c">
+                        </lightning-output-field>
+                        <lightning-output-field field-name="Priority__c">
+                        </lightning-output-field>
+                        <lightning-output-field field-name="Backlog__c">
+                        </lightning-output-field>
+                        <lightning-output-field field-name="stage__c">
+                        </lightning-output-field>
+                        <lightning-output-field field-name="Description__c">
+                        </lightning-output-field>
+                    </div>
+                </lightning-record-view-form>
+           
+    </template>
+
+    <template if:true={isBusinessBacklog}>
+        <div class="slds-page-header slds-page-header--object-home">
+            <lightning-button label="Create Technical Backlog" variant="brand" class="slds-float_right"
+                onclick={onClickCreate}>
+            </lightning-button>
+
+            <lightning-layout>
+                <lightning-layout-item>
+                    <lightning-icon icon-name="standard:contact_list" alternative-text="Review"></lightning-icon>
+                </lightning-layout-item>
+                <lightning-layout-item class="slds-m-left--small">
+                    <p class="slds-text-title--caps slds-line-height--reset">Issue</p>
+                    <h1 class="slds-page-header__title slds-p-right--x-small">Issue Detail</h1>
+                </lightning-layout-item>
+            </lightning-layout>
+
+        </div>
+       
+                <lightning-record-view-form record-id={recordId} object-api-name="Issue__c">
+                    <div class="slds-box">
+                        <lightning-output-field field-name="Name">
+                        </lightning-output-field>
+                        <lightning-output-field field-name="Title__c">
+                        </lightning-output-field>
+                        <lightning-output-field field-name="Assignee__c">
+                        </lightning-output-field>
+                        <lightning-output-field field-name="Priority__c">
+                        </lightning-output-field>
+                        <lightning-output-field field-name="Backlog__c">
+                        </lightning-output-field>
+                        <lightning-output-field field-name="stage__c">
+                        </lightning-output-field>
+                        <lightning-output-field field-name="Description__c">
+                        </lightning-output-field>
+                    </div>
+                </lightning-record-view-form>
+         
+  
+        <div class="gap" style="padding-top: 0.2cm"></div>
+        <lightning-card title="Related Technical Backlogs" icon-name="action:share_poll">
+            <div class="slds-grid">
+                
+                <div class="slds-col slds-size_3-of-12" style="padding-left: 1rem;">
+                    <lightning-input placeholder="Search Backlog Name" type="search" onchange={handleKeyChange} class="slds-m-bottom_small" label="Search"
+                    value={searchKey}></lightning-input>
+                  </div>
+                
+                <div class="slds-col slds-size_3-of-12" style="padding-left: 1rem;">
+                  <lightning-combobox name="Issue Type" label="Issue Type" value={value} placeholder="Select Issue Type"
+                    options={optionsIssueType} onchange={handleChangeIssueType}>
+                  </lightning-combobox>
+                </div>
+                <div class="slds-col  slds-size_3-of-12 slds-p-left_medium">
+                  <lightning-combobox name="Priority Type" label="Priority Type" value={value} placeholder="Select Priority"
+                    options={optionsPriorityType} onchange={handleChangePriority}>
+                  </lightning-combobox>
+                </div>
+              </div>
+            
+              <br>
+            <template if:true={hasTechnicalBacklog}>
+                <lightning-datatable data={backlogList} columns={columns} key-field="Id" hide-checkbox-column="true"
+                    onrowaction={handleRowAction} sorted-by={sortBy}
+                    sorted-direction={sortDirection} onsort={handleSortdata}>
+                </lightning-datatable>
+                <div style="padding-top:0.2cm ;"></div>
+                <c-pagination records={totalBacklogList} onupdate={handleListPagination}></c-pagination>
+            </template>
+            <template if:false={hasTechnicalBacklog}>
+                <div class="slds-illustration slds-illustration_small" aria-hidden="true">
+                    <img src="/img/chatter/Desert.svg" class="slds-illustration__svg" alt="No Backlogs Yet" />
+                    <div class="slds-text-color_weak">
+                        <h3 class="slds-text-heading_medium">No Related Technical Backlogs Yet</h3>
+                    </div>
+                </div>
+            </template>
+        </lightning-card>
+    </template>
+
+
+    <template if:true={createBacklog}>
+        <section role="dialog" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close" onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                            size="small">
+                        </lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                        Create Backlog
+                    </h2>
+                </header>
+                <lightning-card>
+                    <lightning-record-edit-form object-api-name="Issue__c" onsuccess={handleSuccess}>
+                        <lightning-messages></lightning-messages>
+                        <div class="slds-grid slds-wrap">
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                                <lightning-input-field field-name="Project__c" value={projectId} disabled>
+                                </lightning-input-field>
+                            </span>
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                                <lightning-input-field class="resetField" field-name="Issue_Type__c">
+                                </lightning-input-field>
+                            </span>
+                        </div>
+                        <div class="slds-grid slds-wrap">
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                                <lightning-input-field class="resetField" field-name="Title__c">
+                                </lightning-input-field>
+                            </span>
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                                <lightning-input-field class="resetField" field-name="Priority__c">
+                                </lightning-input-field>
+                            </span>
+                        </div>
+                        <div class="slds-grid slds-wrap">
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                                <lightning-input-field field-name="Backlog__c" value='Technical' disabled>
+                                </lightning-input-field>
+                            </span>
+                            <span if:false={hideField} class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                                <lightning-input-field field-name="Related_Business_Issue__c" value={recordId} disabled>
+                                </lightning-input-field>
+                            </span>
+                        </div>
+                        <div class="slds-grid slds-wrap">
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                                <lightning-input-field class="resetField" field-name="Description__c">
+                                </lightning-input-field>
+                            </span>
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                                <lightning-input class="resetField" label="" name="file uploader"
+                                    onchange={handleFilesChange} type="file" multiple>
+                                </lightning-input>
+                                <p class="slds-text-body_small slds-text-color_success">{fileName}</p>
+                                <p class="slds-text-body_small slds-text-color_error">File Size should be less than 150
+                                    Kb</p>
+                                <p class="slds-text-body_small slds-text-color_error">Supported formats are .pdf, .png,
+                                    .docx, .pptx, xlsx, .jpg, .ppt, .xls, .doc</p>
+                            </span>
+
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1 slds-hide">
+                                <lightning-input-field field-name="Assignee__c" value={lead} disabled="true"
+                                    required="true">
+                                </lightning-input-field>
+                            </span>
+                        </div>
+
+
+                        <footer class="slds-modal__footer">
+                            <lightning-button class="slds-button slds-button_left" label="Save" onclick={saveClick}
+                                variant="brand">
+                            </lightning-button>
+                            <lightning-button class="slds-button slds-button_middle" label="Save & New"
+                                onclick={saveAndNewClick}></lightning-button>
+                            <lightning-button class="slds-button slds-button_right" label="Cancel" onclick={closeModal}>
+                            </lightning-button>
+                        </footer>
+                    </lightning-record-edit-form>
+                </lightning-card>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={editBacklog}>
+        <section role="dialog" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close" onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                            size="small">
+                        </lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">
+                        Edit Backlog
+                    </h2>
+                </header>
+                <lightning-card>
+                    <lightning-record-edit-form object-api-name="Issue__c" record-id={rowId}
+                        onsuccess={handleEditSuccess}>
+                        <lightning-messages></lightning-messages>
+                        <div class="slds-grid slds-wrap">
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                                <lightning-input-field field-name="Project__c" value={projectId} disabled>
+                                </lightning-input-field>
+                            </span>
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                                <lightning-input-field field-name="Backlog__c" disabled>
+                                </lightning-input-field>
+                            </span>
+                        </div>
+                        <div class="slds-grid slds-wrap">
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                                <lightning-input-field field-name="Title__c">
+                                </lightning-input-field>
+                            </span>
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                                <lightning-input-field field-name="Issue_Type__c">
+                                </lightning-input-field>
+                            </span>
+                        </div>
+                        <div class=" change slds-grid slds-wrap">
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                                <lightning-input-field field-name="Sprint__c">
+                                </lightning-input-field>
+                            </span>
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                                <lightning-input-field field-name="Related_Business_Issue__c">
+                                </lightning-input-field>
+                            </span>
+                        </div>
+                        <div class="slds-grid slds-wrap">
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                                <lightning-input-field field-name="Priority__c">
+                                </lightning-input-field>
+                            </span>
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                                <lightning-input-field field-name="Assigned_Employee__c">
+                                </lightning-input-field>
+                            </span>
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1 slds-hide">
+                                <lightning-input-field field-name="Assignee__c" value={lead} disabled>
+                                </lightning-input-field>
+                            </span>
+                        </div>
+                        <div class=" change slds-grid slds-wrap">
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                                <lightning-input-field field-name="Estimated_Hours__c">
+                                </lightning-input-field>
+                            </span>
+                            <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                                <lightning-input-field field-name="Description__c">
+                                </lightning-input-field>
+                            </span>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning-button class="slds-button slds-button_left" label="Save" type="submit"
+                                variant="brand">
+                            </lightning-button>
+                            <lightning-button class="slds-button slds-button_right" label="Cancel" onclick={closeModal}>
+                            </lightning-button>
+                        </footer>
+                    </lightning-record-edit-form>
+                </lightning-card>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

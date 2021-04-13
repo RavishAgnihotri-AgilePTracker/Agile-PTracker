@@ -1,0 +1,198 @@
+<template>
+  <div class="spinner">
+    <template if:true={isLoading}>
+      <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+      </lightning-spinner>
+    </template>
+</div>
+<lightning-card>
+    <div class="slds-page-header slds-page-header--object-home">
+        <div if:true={isProductOwner} class="slds-float_right">
+            <lightning-button variant="brand" label="Create Tool" onclick={handleCreate}></lightning-button>
+        </div>
+        <lightning-layout multiple-rows="true" vertical-align="end">
+            <lightning-layout-item>
+                <lightning-icon icon-name="standard:proposition" title="custom11"></lightning-icon>
+            </lightning-layout-item>
+            <lightning-layout-item class="slds-m-left--small">
+                <h1 class="slds-page-header__title slds-p-right--x-small">Tool</h1>
+            </lightning-layout-item>
+
+        </lightning-layout>
+
+    </div>
+
+
+    <!-- ////////////////////////// Create Project Modal Start  ///////////////////////////////////////-->
+
+    <template if:true={createProject}>
+      <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+        aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+          <!-- modal header start -->
+          <header class="slds-modal__header">
+            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+              onclick={closeModal}>
+              <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small">
+              </lightning-icon>
+              <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+              <b>Create Tool</b>
+            </h2>
+          </header>
+          <!-- modal body start -->
+          <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+            <lightning-record-edit-form onsuccess={handleProjectCreateSuccess} object-api-name="Project__c">
+              <lightning-messages></lightning-messages>
+              <div class="slds-grid slds-wrap">
+                <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                  <lightning-input-field field-name="Name" required="true">
+                  </lightning-input-field>
+                </span>
+                <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                  <lightning-input-field field-name="Product_Owner__c" required="true">
+                  </lightning-input-field>
+                </span>
+              </div>
+              <div class="slds-grid slds-wrap">
+                <!-- <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                  <lightning-input-field field-name="Agile_Team__c" required="true">
+                  </lightning-input-field>
+                </span> -->
+                <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                  <lightning-input-field field-name="Lead__c" required="true">
+                  </lightning-input-field>
+                </span>
+
+              </div>
+              <div class="slds-grid slds-wrap">
+                <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                  <lightning-input-field field-name="Description__c" required="true">
+                  </lightning-input-field>
+                </span>
+                <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                  <lightning-input-field field-name="Sprint_Approval_Required__c">
+                  </lightning-input-field>
+                </span>
+              </div>
+              <!-- modal footer start-->
+              <footer class="slds-modal__footer">
+                <lightning-button class="slds-button slds-button_right" label="Cancel" onclick={closeModal}>
+                </lightning-button>
+                <lightning-button class="slds-button slds-button_left" label="Save" type="submit" variant="brand">
+                </lightning-button>
+              </footer>
+            </lightning-record-edit-form>
+          </div>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <!-- ////////////////////////// Create Project Modal End  ///////////////////////////////////////-->
+
+    <!-- ////////////////////////// Edit Project Modal Start  ///////////////////////////////////////-->
+
+    <template if:true={editProject}>
+      <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-02" aria-modal="true"
+        aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+          <!-- modal header start -->
+          <header class="slds-modal__header">
+            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+              onclick={closeModal}>
+              <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small">
+              </lightning-icon>
+              <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">
+              Edit Tool
+            </h2>
+          </header>
+          <!-- modal body start -->
+          <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+            <lightning-record-edit-form record-id={projectId} onsuccess={handleProjectEditSuccess}
+              object-api-name="Project__c">
+              <lightning-messages></lightning-messages>
+              <div class="slds-grid slds-wrap">
+                <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                  <lightning-input-field field-name="Name" required="true">
+                  </lightning-input-field>
+                </span>
+                <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                  <lightning-input-field field-name="Lead__c" required="true">
+                  </lightning-input-field>
+                </span>
+                <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                  <lightning-input-field field-name="Description__c" required="true">
+                  </lightning-input-field>
+                </span>
+                <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                  <lightning-input-field field-name="Product_Owner__c" required="true">
+                  </lightning-input-field>
+                </span>
+              </div>
+              <!-- modal footer start-->
+              <footer class="slds-modal__footer">
+                <lightning-button class="slds-button slds-button_right" label="Cancel" onclick={closeModal}>
+                </lightning-button>
+                <lightning-button class="slds-button slds-button_left" label="Save" type="submit" variant="brand">
+                </lightning-button>
+              </footer>
+            </lightning-record-edit-form>
+          </div>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <!-- ////////////////////////// Edit Project Modal End  ///////////////////////////////////////-->
+
+    <!-- ////////////////////////// Filter Status  ///////////////////////////////////////-->
+
+
+    <div class="slds-grid">
+        <div if:true={isLead} class="slds-col slds-size_4-of-12" style="padding-left: 1rem;">
+            <lightning-input type="search" placeholder="Search Tool Name" onchange={handleKeyChange} class="slds-m-bottom_small" label="Search" value={searchKey}></lightning-input>
+        </div>
+
+        <div if:true={isProductOwner} class="slds-col slds-size_4-of-12" style="padding-left: 1rem;">
+            <lightning-input type="search" placeholder="Search Tool Name" onchange={handleKeyChange} class="slds-m-bottom_small" label="Search" value={searchKey}></lightning-input>
+        </div>
+
+        <div style="padding-bottom: 0.5cm;" class="widthCombobox slds-col  slds-wrap slds-size_2-of-12 slds-p-left_medium">
+            <lightning-combobox name="Status Filter" label="Status Filter" value={value} placeholder="Select Status" options={options} onchange={handleChange}>
+            </lightning-combobox>
+        </div>
+
+    </div>
+
+
+
+
+
+    <!-- ////////////////////////// Ends Filter Status  ///////////////////////////////////////-->
+
+    <!--///////////////////////////Datatable ////////////////////////////////////////-->
+    <template if:true={hasProject}>
+      <lightning-datatable data={dataList} columns={columns} key-field="Id" sorted-by={sortBy}
+        sorted-direction={sortDirection} onsort={handleSortdata} hide-checkbox-column="true"
+        onrowaction={handleRowAction}>
+      </lightning-datatable>
+      <div style="padding-top:0.2cm ;"></div>
+      <c-pagination records={records} onupdate={handleListPagination}>
+      </c-pagination>
+    </template>
+
+    <!--////////////////////////////// Image when datatable has no data ////////////////////////////////////////-->
+    <template if:false={hasProject}>
+      <div class="slds-illustration slds-illustration_small" aria-hidden="true">
+        <img src="/img/chatter/Desert.svg" class="slds-illustration__svg" alt="No Backlogs" />
+        <div class="slds-text-color_weak">
+          <h3 class="slds-text-heading_medium">No Tool Here</h3>
+        </div>
+      </div>
+    </template>
+</lightning-card>
+</template>

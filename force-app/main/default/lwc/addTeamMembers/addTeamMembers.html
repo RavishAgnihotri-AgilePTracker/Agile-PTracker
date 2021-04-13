@@ -1,0 +1,47 @@
+<template>
+    <lightning-card>
+        <template for:each={itemList} for:item="item" for:index="index">
+            <lightning-record-edit-form key={item.id} object-api-name="Team_Member__c" onsubmit={handleSubmit}
+                onsuccess={handleSuccess}>
+                <lightning-messages> </lightning-messages>
+                <lightning-layout multiple-rows>
+                    <lightning-layout-item size="12" small-device-size="6" medium-device-size="4" large-device-size="5"
+                        padding="around-small">
+                        <lightning-input-field field-name="Employee__c" variant="label-stacked" required>
+                        </lightning-input-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" small-device-size="6" medium-device-size="4" large-device-size="5"
+                        padding="around-small">
+                        <lightning-input-field field-name="Role__c" variant="label-stacked" required>
+                        </lightning-input-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" small-device-size="6" medium-device-size="4" large-device-size="4"
+                        padding="around-small" class="slds-hide">
+                        <lightning-input-field field-name="Team__c" variant="label-stacked" value={teamId}>
+                        </lightning-input-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" small-device-size="6" medium-device-size="4" large-device-size="2"
+                        padding="around-small">
+                        <div class="slds-p-top_medium">
+                            <lightning-icon icon-name="action:new" access-key={item.id} id={index}
+                                alternative-text="Add Row" size="x-small" title="Add Row" onclick={addRow}>
+                            </lightning-icon>
+                            <lightning-icon icon-name="action:delete" access-key={item.id} id={index}
+                                alternative-text="Delete Row" size="x-small" title="Delete Row" onclick={removeRow}>
+                            </lightning-icon>
+                        </div>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-record-edit-form>
+        </template>
+        </br>
+        <footer class="slds-modal__footer">
+        <lightning-layout>
+            <div class="slds-align_absolute-center">
+                <lightning-button variant="brand-outline" onclick={handleSubmit} name="submit " label="Save">
+                </lightning-button>
+            </div>
+        </lightning-layout>
+    </footer>
+    </lightning-card>
+</template>

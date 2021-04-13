@@ -1,0 +1,27 @@
+<template>
+    <div class="slds-page-header slds-page-header--object-home">
+        <lightning-layout>
+            <template if:true={isIssue}>
+                <lightning-layout-item>
+                    <lightning-icon icon-name="standard:contact_list" alternative-text="Review"></lightning-icon>
+                </lightning-layout-item>
+                <lightning-layout-item class="slds-m-left--small">
+                    <p class="slds-text-title--caps slds-line-height--reset">Issue</p>
+                    <h1 class="slds-page-header__title slds-p-right--x-small">Issue Detail</h1>
+                </lightning-layout-item>
+            </template>
+            <template if:false={isIssue}>
+                <lightning-layout-item>
+                    <lightning-icon icon-name="action:description" size="medium" alternative-text="Sprint">
+                    </lightning-icon>
+                </lightning-layout-item>
+                <lightning-layout-item class="slds-m-left--small">
+                    <p class="slds-text-title--caps slds-line-height--reset">Sprint</p>
+                    <h1 class="slds-page-header__title slds-p-right--x-small">
+                        Sprint Details
+                    </h1>
+                </lightning-layout-item>
+            </template>
+        </lightning-layout>
+    </div>
+</template>

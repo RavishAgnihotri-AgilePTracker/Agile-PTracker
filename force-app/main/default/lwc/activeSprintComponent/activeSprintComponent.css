@@ -1,0 +1,32 @@
+.card_wrapper {
+    padding: 0.5rem;
+    display: flex;
+    justify-content: space-around;
+    background: rgb(255, 255, 255);
+}
+
+.column_heading {
+    padding: 0.5rem 0.25rem;
+    font-size: 16px;
+    background: #034b85;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.stageContainer {
+    float: left;
+    border: 2px solid #d8dde6;
+    margin: 0.05rem;
+    border-radius: .25rem;
+    min-width: 12rem;
+}
+
+.Complete {
+    background-color: #0ebd0e;
+    color: white;
+}
+
+.Bug {
+    background-color: #ce3737;
+    color: white;
+}

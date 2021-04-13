@@ -1,0 +1,287 @@
+<template>
+  <div class="spinner">
+    <template if:true={isLoading}>
+      <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+      </lightning-spinner>
+    </template>
+  </div>
+  <template if:true={activeSprints}>
+    <div>
+      <lightning-layout>
+        <lightning-layout-item size="2">
+          <a key={sprintId} onclick={handleAnchorClick}>
+            <div class="slds-text-heading_medium">
+              {sprintName}
+            </div>
+          </a>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="8">
+          <div class="slds-progress-bar slds-progress-bar_circular" aria-valuemin="0" aria-valuemax="100"
+            aria-valuenow="15" role="progressbar">
+            <span class="slds-progress-bar__value slds-progress-bar__value_success">
+            </span>
+          </div>
+          <div class="Progress slds-text-align--center slds-text-title">
+            Progress - {avgSprintProgressValue}%
+          </div>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="2">
+          <div style="padding-left: 4rem;">
+            <lightning-button variant="success" onclick={handleCompleteSprint} label="Complete Sprint"
+              disabled={isProductOwner}></lightning-button>
+          </div>
+          <!-- <div
+                    if:true={activeSpinner}
+                    class="slds-spinner_inline spinner-padding"
+                  >
+                    <lightning-spinner
+                      variant="brand"
+                      alternative-text="Loading"
+                      size="medium"
+                    >
+                    </lightning-spinner>
+                  </div> -->
+        </lightning-layout-item>
+      </lightning-layout>
+    </div>
+    <div class="card_wrapper">
+      <template for:each={pickVals} for:item="item">
+        <div class="stageContainer" key={item} style={calcWidth}>
+          <h1 class="column_heading slds-align_absolute-center">{item}</h1>
+          <c-active-sprint-list records={records} stage={item} onlistitemdrag={handleListItemDrag}
+            onitemdrop={handleItemDrop} oncreatebug={handleCreateBug} onupdateprogress={handleProgressUpdate}>
+          </c-active-sprint-list>
+        </div>
+      </template>
+    </div>
+  </template>
+
+
+  <template if:false={activeSprints}>
+    <div class="slds-illustration slds-illustration_small" aria-hidden="true">
+      <img src="/img/chatter/Desert.svg" class="slds-illustration__svg" alt="No Active Sprint Yet" />
+      <div class="slds-text-color_weak">
+        <h3 class="slds-text-heading_medium">No Active Sprint Yet</h3>
+      </div>
+    </div>
+  </template>
+
+  <template if:true={showIncompleteBacklogModal}>
+    <section role="dialog" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+        <lightning-card>
+          <div class="slds-text-align_center">
+            <div class="slds-text-heading_medium">
+              <b>Complete Sprint: {sprintName}</b>
+            </div>
+          </div>
+          &nbsp; &nbsp;
+          &nbsp; &nbsp;
+          &nbsp; &nbsp;
+          &nbsp; &nbsp;
+          <div class="slds-text-align_left">
+            <div class="slds-text-longform">
+              <span> &nbsp; &nbsp; <b>{incompleteBaklogsListLength}</b> </span>
+              <span>{message}</span>
+              <p> &nbsp; &nbsp; Select where all the incomplete issues should be moved: </p>
+              <p> &nbsp; &nbsp; Move it to <b>Backlogs ?</b></p>
+              <div class="slds-form-element slds-form-element_horizontal slds-is-editing slds-form-element_1-col">
+                <label style="padding-left: 0.7rem; color: rgb(89,89,89);" class="slds-form-element__label"
+                  for="single-form-element-id-01">or add to</label>
+                <div class="slds-form-element__control">
+                  <span class="slds-media__body">
+                    <lightning-combobox name="Sprint Select" style="width: 10rem;" value='none'
+                      placeholder="Select Sprint" options={options} onchange={handleChange}>
+                    </lightning-combobox>
+                  </span>
+                </div>
+              
+                <!-- Create Backlog Section -->
+                <template if:true={createSprint}>
+                  <lightning-card>
+                    <lightning-record-edit-form object-api-name="Sprint__c" onsuccess={handleCreateSprintSuccess}>
+                      <lightning-messages></lightning-messages>
+                      
+                      <div class="slds-grid slds-wrap">
+                        <span class="slds-hide">
+                          <lightning-input-field field-name="Project__c" value={projectId} disabled>
+                          </lightning-input-field>
+                        </span>                       
+                        <span class="slds-size_10-of-12">                          
+                          <lightning-input-field field-name="Name" required>
+                          </lightning-input-field>
+                        </span>
+
+                        <span class="slds-size_2-of-12">
+                          <lightning-button-icon class="slds-button slds-button_right" icon-name="action:reject"
+                          onclick={closeSprintModal} variant="destructive-text">
+                        </lightning-button-icon>
+                        <lightning-button-icon class="slds-button slds-button_left" icon-name="action:approval"
+                        onclick={submitCreateSprint} variant="brand-outline">
+                      </lightning-button-icon>
+                        </span>                       
+                      </div>
+
+                     
+                    </lightning-record-edit-form>
+                  </lightning-card>
+                </template>
+              </div>
+            </div>
+          </div>
+
+
+          <footer class="slds-modal__footer">
+            <lightning-button class="slds-button slds-button_left" label="Complete" variant="brand-outline"
+              onclick={onClickCompleteSprint}></lightning-button>
+            <lightning-button class="slds-button slds-button_right" label="Cancel" variant="destructive-text"
+              onclick={closeIncompleteBacklogModal}>
+            </lightning-button>
+          </footer>
+        </lightning-card>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </template>
+
+  <template if:true={addCommentModal}>
+    <section role="dialog" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+        <header class="slds-modal__header Complete">
+          <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+            onclick={closeCommentModal}>
+            <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small">
+            </lightning-icon>
+            <span class="slds-assistive-text">Close</span>
+          </button>
+          <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">
+            Complete Backlog
+          </h2>
+        </header>
+        <lightning-card>
+          <lightning-record-edit-form object-api-name="Issue__c" record-id={recordId} onsuccess={handleSuccess}>
+            <lightning-messages></lightning-messages>
+            <div class="slds-grid slds-wrap">
+              <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                <lightning-input-field field-name="Project__c" value={projectId} disabled>
+                </lightning-input-field>
+              </span>
+              <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                <lightning-input-field field-name="Title__c" disabled>
+                </lightning-input-field>
+              </span>
+            </div>
+            <div class="slds-grid slds-wrap">
+              <span class="slds-size_1-of-1 slds-max-small-size_1-of-1">
+                <lightning-input-field field-name="Comment__c">
+                </lightning-input-field>
+              </span>
+              <span class="slds-size_1-of-2 slds-max-small-size_1-of-1 slds-hide">
+                <lightning-input-field field-name="stage__c" disabled value="COMPLETED">
+                </lightning-input-field>
+              </span>
+              <span class="slds-size_1-of-2 slds-max-small-size_1-of-1 slds-hide">
+                <lightning-input-field field-name="Progress__c" disabled value="100">
+                </lightning-input-field>
+              </span>
+            </div>
+
+            <footer class="slds-modal__footer">
+              <lightning-button class="slds-button slds-button_left" label="Save" type="submit" variant="brand">
+              </lightning-button>
+              <lightning-button class="slds-button slds-button_right" label="Cancel" onclick={closeCommentModal}>
+              </lightning-button>
+            </footer>
+          </lightning-record-edit-form>
+        </lightning-card>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </template>
+
+  <template if:true={createBug}>
+    <section role="dialog" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+        <header class="slds-modal__header Bug">
+          <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+            onclick={closeBugModal}>
+            <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small">
+            </lightning-icon>
+            <span class="slds-assistive-text">Close</span>
+          </button>
+          <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+            Create Bug
+          </h2>
+        </header>
+        <lightning-card>
+          <lightning-record-edit-form object-api-name="Issue__c" onsuccess={handleBugCreateSuccess}>
+            <lightning-messages></lightning-messages>
+            <div class="slds-grid slds-wrap">
+              <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                <lightning-input-field field-name="Project__c" value={projectId} disabled>
+                </lightning-input-field>
+              </span>
+              <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                <lightning-input-field field-name="Issue_Type__c" value="Bug" disabled>
+                </lightning-input-field>
+              </span>
+            </div>
+            <div class="slds-grid slds-wrap">
+              <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                <lightning-input-field field-name="Title__c">
+                </lightning-input-field>
+              </span>
+              <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                <lightning-input-field field-name="Priority__c">
+                </lightning-input-field>
+              </span>
+            </div>
+            <div class="slds-grid slds-wrap">
+              <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                <lightning-input-field field-name="Estimated_Hours__c">
+                </lightning-input-field>
+              </span>
+              <span class="slds-size_1-of-2 slds-max-small-size_1-of-1 slds-hide">
+                <lightning-input-field field-name="Assignee__c" value={lead} disabled>
+                </lightning-input-field>
+              </span>
+              <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                <lightning-input-field field-name="Assigned_Employee__c">
+                </lightning-input-field>
+              </span>
+            </div>
+            <div class="slds-grid slds-wrap slds-hide">
+              <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                <lightning-input-field field-name="Sprint__c" value={sprintId} disabled>
+                </lightning-input-field>
+              </span>
+              <span class="slds-size_1-of-2 slds-max-small-size_1-of-1">
+                <lightning-input-field field-name="Related_Issue__c" value={recordRelatedtoBugId} disabled>
+                </lightning-input-field>
+              </span>
+            </div>
+            <div class="slds-grid slds-wrap">
+              <span class="slds-size_1-of-1 slds-max-small-size_1-of-1">
+                <lightning-input-field field-name="Description__c">
+                </lightning-input-field>
+              </span>
+            </div>
+
+            <footer class="slds-modal__footer">
+              <lightning-button class="slds-button slds-button_left" label="Save" type="submit" variant="brand">
+              </lightning-button>
+              <lightning-button class="slds-button slds-button_right" label="Cancel" onclick={closeBugModal}>
+              </lightning-button>
+            </footer>
+          </lightning-record-edit-form>
+        </lightning-card>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </template>
+
+
+
+</template>
